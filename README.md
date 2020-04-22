@@ -16,12 +16,22 @@ Generated token `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1ODc1ODQ2OTksIn
 
 ## Header
 ```
-{"alg":"HS256","typ":"JWT"}
+{
+  "alg": "HS256",
+  "typ": "JWT"
+}
 ```
 
 ## Payload
 ```
-{"iat":1587584761,"sub":"irisowner","iss":"IRIS-IRISAPP","exp":1587588361,"nbf":1587584761,"jti":"11215"}
+{
+  "iat": 1587584761,
+  "sub": "irisowner",
+  "iss": "IRIS-IRISAPP",
+  "exp": 1587588361,
+  "nbf": 1587584761,
+  "jti": "11215"
+}
 ```
 
 ### Customize payload
@@ -40,7 +50,15 @@ Generated token `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiTWlrZSBXYXpvd3
 Payload data : 
 
 ```
-{"name":"Mike Wazowski","sub":"override sub property","iat":1587585723,"iss":"IRIS-IRISAPP","exp":1587589323,"nbf":1587585723,"jti":"11619"}
+{
+  "name": "Mike Wazowski",
+  "sub": "override sub property",
+  "iat": 1587585723,
+  "iss": "IRIS-IRISAPP",
+  "exp": 1587589323,
+  "nbf": 1587585723,
+  "jti": "11619"
+}
 ```
 
 #### Force payload value :
@@ -56,7 +74,13 @@ Generated token `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiTWlrZSBXYXpvd3
 Payload data : 
 
 ```
-{"name":"Mike Wazowski","sub":"irisuser","iat":1587584761,"exp":1587588361,"aud":"1.2.3.4"}
+{
+  "name": "Mike Wazowski",
+  "sub": "irisuser",
+  "iat": 1587584761,
+  "exp": 1587588361,
+  "aud": "1.2.3.4"
+}
 ```
 
 If you passed by reference a fifth argument to generate classmethod you can retrieve the used dc.auth.jwt.JWTGenerator object instance.  
