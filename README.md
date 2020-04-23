@@ -1,4 +1,3 @@
-![jwtimg](https://jwt.io/img/logo-asset.svg)
 # JSON Web Token Generator
 
 This is a simple class in order to generate, validate or blacklist a [JSON Web Token](https://jwt.io).  
@@ -12,7 +11,10 @@ Set validityInSecond = 3600
 Set jwt = ##class(dc.auth.jwt.JWTGenerator).generate("MySecretKey",validityInSecond)
 ```
 
-Generated token `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1ODc1ODQ2OTksInN1YiI6ImlyaXNvd25lciIsImlzcyI6IklSSVMtSVJJU0FQUCIsImV4cCI6MTU4NzU4ODI5OSwibmJmIjoxNTg3NTg0Njk5LCJqdGkiOiIxMTExNCJ9.r-tyzZBPBE5_OeFjkr355QEztriswX3EkN68Ck9Em-M`
+Generated token 
+```
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1ODc1ODQ2OTksInN1YiI6ImlyaXNvd25lciIsImlzcyI6IklSSVMtSVJJU0FQUCIsImV4cCI6MTU4NzU4ODI5OSwibmJmIjoxNTg3NTg0Njk5LCJqdGkiOiIxMTExNCJ9.r-tyzZBPBE5_OeFjkr355QEztriswX3EkN68Ck9Em-M
+```
 
 ## Header
 ```
@@ -44,7 +46,11 @@ Set addPayloadData = { "name" : "Mike Wazowski", "sub":"override sub property" }
 Set jwt = ##class(dc.auth.jwt.JWTGenerator).generate("MySecretKey",validityInSecond,addPayloadData)
 ```
 
-Generated token `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiTWlrZSBXYXpvd3NraSIsInN1YiI6Im92ZXJyaWRlIHN1YiBwcm9wZXJ0eSIsImlhdCI6MTU4NzU4NTcyMywiaXNzIjoiSVJJUy1JUklTQVBQIiwiZXhwIjoxNTg3NTg5MzIzLCJuYmYiOjE1ODc1ODU3MjMsImp0aSI6IjExNjE5In0.ZeV7J2KQKFO7l3ZZghrN0mLFhkhcErD80bTFdXXeIjo`  
+Generated token 
+
+```
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiTWlrZSBXYXpvd3NraSIsInN1YiI6Im92ZXJyaWRlIHN1YiBwcm9wZXJ0eSIsImlhdCI6MTU4NzU4NTcyMywiaXNzIjoiSVJJUy1JUklTQVBQIiwiZXhwIjoxNTg3NTg5MzIzLCJuYmYiOjE1ODc1ODU3MjMsImp0aSI6IjExNjE5In0.ZeV7J2KQKFO7l3ZZghrN0mLFhkhcErD80bTFdXXeIjo
+```
 
 
 Payload data : 
@@ -71,7 +77,10 @@ Set payload = { "name" : "Mike Wazowski", "sub":"irisuser", "iat":1587584761,"ex
 Set jwt = ##class(dc.auth.jwt.JWTGenerator).generate("MySecretKey",validityInSecond,payload,0,.jwtObj)
 ```
 
-Generated token `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiTWlrZSBXYXpvd3NraSIsInN1YiI6ImlyaXN1c2VyIiwiaWF0IjoxNTg3NTg0NzYxLCJleHAiOjE1ODc1ODgzNjEsImF1ZCI6IjEuMi4zLjQifQ.zytuIRD56lvAnb-WnguIfbn9-t8RwSzfI_9PbBHzq8U`  
+Generated token 
+```
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiTWlrZSBXYXpvd3NraSIsInN1YiI6ImlyaXN1c2VyIiwiaWF0IjoxNTg3NTg0NzYxLCJleHAiOjE1ODc1ODgzNjEsImF1ZCI6IjEuMi4zLjQifQ.zytuIRD56lvAnb-WnguIfbn9-t8RwSzfI_9PbBHzq8U
+```
 
 Payload data : 
 
