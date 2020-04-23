@@ -161,6 +161,21 @@ Write !,$SYSTEM.Status.GetOneErrorText(sc)
 
 Result : `ERROR #5001: Token is black listed.`
 
+## Purge blacklist
+
+Remove all token from the blacklist:  
+
+```
+Do ##class(dc.auth.jwt.JWTGenerator).purgeBlackList(0)
+```
+
+Remove only expired from the blacklist:
+
+```
+Do ##class(dc.auth.jwt.JWTGenerator).purgeBlackList()
+```
+
+
 ## Prerequisites
 Make sure you have [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) and [Docker desktop](https://www.docker.com/products/docker-desktop) installed.
 

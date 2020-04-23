@@ -138,8 +138,7 @@ ClassMethod isValid(jwt As %String, secret As %String, ByRef sc As %Status, payl
             }
         }
 
-        Set jti = jwtObj.payload.jti
-        If (jti '= "") && ($Data(^dc.auth.jwt.JWTGeneratorI("blackList", jti))) {
+        If jwtObj.isBlackListed() {
             Set sc = $$$ERROR($$$GeneralError, "Token is black listed.")
             Return $$$NO
         }
@@ -148,6 +147,12 @@ ClassMethod isValid(jwt As %String, secret As %String, ByRef sc As %Status, payl
         Set sc = ex.AsStatus()
     }
     Return $Select($$$ISOK(sc):$$$YES,1:$$$NO)
+}
+
+Method isBlackListed() As %Boolean
+{
+    Return:..payload.jti="" 0
+    Return ''$Data(^dc.auth.jwt.JWTGeneratorI("blackList", ..payload.jti))
 }
 
 ClassMethod loadFromToken(jwt As %String, secret As %String = "") As dc.auth.jwt.JWTGenerator
@@ -174,6 +179,27 @@ ClassMethod blackList(jwt As %String) As %Status
         }
     } Catch (ex) {
         Set tSc = ex.AsStatus()
+    }
+    Return tSc
+}
+
+ClassMethod purgeBlackList(expiredOnly As %Boolean = 1) As %Status
+{
+    Set tSc = $$$OK
+
+    If 'expiredOnly {
+        Kill ^dc.auth.jwt.JWTGeneratorI("blackList")
+        Return tSc
+    }
+
+    Set currentDateTime = $ZDatetime($Horolog,-2)
+    Set jti = ""
+    For  {
+        Set jti = $Order(^dc.auth.jwt.JWTGeneratorI("blackList", jti),1,value)
+        Quit:jti=""
+        If currentDateTime > $Listget(value,1) {
+            Kill ^dc.auth.jwt.JWTGeneratorI("blackList", jti)
+        }
     }
     Return tSc
 }
