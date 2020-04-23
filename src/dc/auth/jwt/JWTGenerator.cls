@@ -19,7 +19,8 @@ ClassMethod generate(secret As %String, validityInSec As %Integer = 3600, payloa
     Set jwt = ..%New()
     Set jwt.secret = secret
     Set jwt.header = jwt.genHeader()
-
+    Set jwt.validityInSec = validityInSec
+    
     If mergePayLoad {
         Set jwt.payload = jwt.genPayload(payload)
     } Else {
