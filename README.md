@@ -11,7 +11,10 @@ Set validityInSecond = 3600
 Set jwt = ##class(dc.auth.jwt.JWTGenerator).generate("MySecretKey",validityInSecond)
 ```
 
-Generated token `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1ODc1ODQ2OTksInN1YiI6ImlyaXNvd25lciIsImlzcyI6IklSSVMtSVJJU0FQUCIsImV4cCI6MTU4NzU4ODI5OSwibmJmIjoxNTg3NTg0Njk5LCJqdGkiOiIxMTExNCJ9.r-tyzZBPBE5_OeFjkr355QEztriswX3EkN68Ck9Em-M`
+Generated token 
+```
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1ODc1ODQ2OTksInN1YiI6ImlyaXNvd25lciIsImlzcyI6IklSSVMtSVJJU0FQUCIsImV4cCI6MTU4NzU4ODI5OSwibmJmIjoxNTg3NTg0Njk5LCJqdGkiOiIxMTExNCJ9.r-tyzZBPBE5_OeFjkr355QEztriswX3EkN68Ck9Em-M
+```
 
 ## Header
 ```
