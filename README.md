@@ -1,4 +1,4 @@
-![jwtimg](https://jwt.io/img/logo-asset.svg)
+![jwtimg](https://jwt.io/img/icon.svg)
 # JSON Web Token Generator
 
 This is a simple class in order to generate, validate or blacklist a [JSON Web Token](https://jwt.io).  
