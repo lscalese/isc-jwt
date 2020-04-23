@@ -96,7 +96,7 @@ If you pass by reference a fifth argument to isValid method you may retrieve the
 Set isValid = ##class(dc.auth.jwt.JWTGenerator).isValid(jwt,"MySecretKey",.sc,,.jwtObj)
 ```
 
-If the token invalid, you can retrieve an error message with the status passed by reference
+If the token is invalid, you can retrieve an error message with the status passed by reference
 ```
 Write $SYSTEM.Status.GetOneErrorText(sc)
 ```
@@ -134,7 +134,7 @@ Result : `OK`
 ## Add a token to the black list
 
 Blacklist method use `jti` property to store the blacklisted jwt.  
-If you use your own payload without jti property, blacklist method fail and return `ERROR #5001: jti is null`.  
+If you use your own payload structure without jti property, blacklist method fail and return `ERROR #5001: jti is null`.  
 
 example : 
 
