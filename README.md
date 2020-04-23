@@ -1,7 +1,7 @@
 ![jwtimg](https://jwt.io/img/logo-asset.svg)
 # JSON Web Token Generator
 
-This is a simple class in order to generate and validate a [JSON Web Token](https://jwt.io).  
+This is a simple class in order to generate, validate or blacklist a [JSON Web Token](https://jwt.io).  
 Signature is encrypted with HS256 algorithm.  
 
 ## Generate a token
@@ -63,10 +63,12 @@ Payload data :
 
 #### Force payload value :
 
+Force a payload without merging with default payload strucure:
+
 ```
 Set validityInSecond = 3600
 Set payload = { "name" : "Mike Wazowski", "sub":"irisuser", "iat":1587584761,"exp":1587588361, "aud":"1.2.3.4" }
-Set jwt = ##class(dc.auth.jwt.JWTGenerator).generate("MySecretKey",validityInSecond,payload,0)
+Set jwt = ##class(dc.auth.jwt.JWTGenerator).generate("MySecretKey",validityInSecond,payload,0,.jwtObj)
 ```
 
 Generated token `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiTWlrZSBXYXpvd3NraSIsInN1YiI6ImlyaXN1c2VyIiwiaWF0IjoxNTg3NTg0NzYxLCJleHAiOjE1ODc1ODgzNjEsImF1ZCI6IjEuMi4zLjQifQ.zytuIRD56lvAnb-WnguIfbn9-t8RwSzfI_9PbBHzq8U`  
@@ -83,14 +85,15 @@ Payload data :
 }
 ```
 
-If you passed by reference a fifth argument to generate classmethod you can retrieve the used dc.auth.jwt.JWTGenerator object instance.  
+If you pass by reference a fifth argument to isValid method you may retrieve the dc.auth.jwt.JWTGenerator object instance.  
+
 
 ## Validate Token
 
 ### Basic validation
 
 ```
-Set isValid = ##class(dc.auth.jwt.JWTGenerator).isValid(jwt,"MySecretKey",.sc)
+Set isValid = ##class(dc.auth.jwt.JWTGenerator).isValid(jwt,"MySecretKey",.sc,,.jwtObj)
 ```
 
 If the token invalid, you can retrieve an error message with the status passed by reference
@@ -99,11 +102,20 @@ Write $SYSTEM.Status.GetOneErrorText(sc)
 ```
 Ex: `ERROR #5001: Signature Mismatch.`
 
+If you pass by reference a fifth argument to isValid method you may retrieve the dc.auth.jwt.JWTGenerator object instance. 
+It's useful for payload data access ex :  
+
+```
+zw jwt.payload
+```
+
+Payload property is a %DynamicObject.  
+
 ### Validation with additional matching payload data
 
 ```
 Set payLoadMatch = {"name":"Mike Wazowski", "aud":"127.0.0.1"}
-Set isValid = ##class(dc.auth.jwt.JWTGenerator).isValid(jwt,"MySecretKey",.sc,payLoadMatch)
+Set isValid = ##class(dc.auth.jwt.JWTGenerator).isValid(jwt,"MySecretKey",.sc,payLoadMatch,.jwtObj)
 Write $SYSTEM.Status.GetOneErrorText(sc)
 ```
 
@@ -112,19 +124,45 @@ Result : `ERROR #5001: aud mismatch.`
 We can also check if aud value match in specific list : 
 
 ```
-Set payLoadMatch = {"name":"Mike Wazowski", "aud":["127.0.0.1","1.2.3.4"]}
-Set isValid = ##class(dc.auth.jwt.JWTGenerator).isValid(jwt,"MySecretKey",.sc,payLoadMatch)
+Set payLoadMatch = {"name":"Mike Wazowski", "aud": ["127.0.0.1","1.2.3.4"] }
+Set isValid = ##class(dc.auth.jwt.JWTGenerator).isValid(jwt,"MySecretKey",.sc,payLoadMatch,.jwtObj)
 Write $SYSTEM.Status.GetOneErrorText(sc)
 ```
 
-Result : `OK`
+Result : `OK` 
 
-If you passed by reference a fifth argument to isValid method you can retrieve the used dc.auth.jwt.JWTGenerator object instance.  
+## Add a token to the black list
+
+Blacklist method use `jti` property to store the blacklisted jwt.  
+If you use your own payload without jti property, blacklist method fail and return `ERROR #5001: jti is null`.  
+
+example : 
+
+```
+Set validityInSecond = 3600
+Set jwt = ##class(dc.auth.jwt.JWTGenerator).generate("MySecretKey",validityInSecond)  ; Generate a token for blacklist testing
+Do ##class(dc.auth.jwt.JWTGenerator).blackList(jwt)
+```
+
+Now check the validity :
+```
+Set isValid = ##class(dc.auth.jwt.JWTGenerator).isValid(jwt,"MySecretKey",.sc)
+Write !,$SYSTEM.Status.GetOneErrorText(sc)
+```
+
+Result : `ERROR #5001: Token is black listed.`
 
 ## Prerequisites
 Make sure you have [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) and [Docker desktop](https://www.docker.com/products/docker-desktop) installed.
 
-## Installation 
+## ZPM Installation
+
+```
+zpm
+install jwt-generator
+```
+
+## Docker Installation
 
 Clone/git pull the repo into any local directory
 

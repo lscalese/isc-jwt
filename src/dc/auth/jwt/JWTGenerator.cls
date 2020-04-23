@@ -14,10 +14,6 @@ Property header As %DynamicObject;
 
 Property payload As %DynamicObject;
 
-Property signature As %DynamicObject;
-
-Property token As %String;
-
 ClassMethod generate(secret As %String, validityInSec As %Integer = 3600, payload As %DynamicObject = {{}}, mergePayLoad As %Boolean = 1, ByRef jwt As dc.auth.jwt.JWTGenerator) As %String
 {
     Set jwt = ..%New()
@@ -30,8 +26,7 @@ ClassMethod generate(secret As %String, validityInSec As %Integer = 3600, payloa
         Set jwt.payload = payload
     }
 
-    Set jwt.token = jwt.genToken()
-    Return jwt.token
+    Return jwt.genToken()
 }
 
 Method genToken() As %String
@@ -88,42 +83,39 @@ Method getJti() As %Integer
 ClassMethod isValid(jwt As %String, secret As %String, ByRef sc As %Status, payloadMatch As %DynamicObject = {{}}, ByRef jwtObj As dc.auth.jwt.JWTGenerator, dateTime = { $ZDatetime($Horolog,-2)}) As %Boolean
 {
     Set sc = $$$OK
-    Set jwtObj = ..%New()
     Try {
-        Set jwtObj.secret = secret
-        Set jsonHeader = $SYSTEM.Encryption.Base64Decode($Translate($Piece(jwt,".",1),"-_","+/"))
-        Set jsonPayload = $SYSTEM.Encryption.Base64Decode($Translate($Piece(jwt,".",2),"-_","+/"))
+        
+        Set jwtObj = ..loadFromToken(jwt, secret)
+
         Set encryptedSignature = $Piece(jwt,".",3)
-        Set jwtObj.header = {}.%FromJSON(jsonHeader)
-        Set jwtObj.payload = {}.%FromJSON(jsonPayload)
 
         If jwtObj.header.typ '= ..#TYP {
-            Set sc = $$$ERROR(5001,"Bad token 'typ'.")
+            Set sc = $$$ERROR($$$GeneralError,"Bad token 'typ'.")
             Return $$$NO
         }
 
         If jwtObj.header.alg '= ..#HS256ALG {
-            Set sc = $$$ERROR(5001,"Bad encyption algorithm.")
+            Set sc = $$$ERROR($$$GeneralError,"Bad encyption algorithm.")
             Return $$$NO
         }
 
         Set verifiedSignature = jwtObj.getSignature()
         If (verifiedSignature '= encryptedSignature) {
-            Set sc = $$$ERROR(5001,"Signature Mismatch.")
+            Set sc = $$$ERROR($$$GeneralError,"Signature Mismatch.")
             Return $$$NO
         }
 
         Set dateTime = $ZDatetime($Horolog,-2)
         If jwtObj.payload.%IsDefined("exp") {
             If dateTime > jwtObj.payload.exp {
-                Set sc = $$$ERROR(5001,"Token expired.")
+                Set sc = $$$ERROR($$$GeneralError,"Token expired.")
                 Return $$$NO
             }
         }
 
         If jwtObj.payload.%IsDefined("nbf") {
             If dateTime < jwtObj.payload.nbf {
-                Set sc = $$$ERROR(5001,"Token cannot be used yet.")
+                Set sc = $$$ERROR($$$GeneralError,"Token cannot be used yet.")
                 Return $$$NO
             }
         }
@@ -132,22 +124,57 @@ ClassMethod isValid(jwt As %String, secret As %String, ByRef sc As %Status, payl
         While iter.%GetNext(.key , .value ) {
             If '$Isobject(value) {
                 If jwtObj.payload.%Get(key) '= value {
-                    Set sc = $$$ERROR(5001, key _ " mismatch.")
+                    Set sc = $$$ERROR($$$GeneralError, key _ " mismatch.")
                     Return $$$NO
                 } 
             } Else {
                 Set array = ##class(%ArrayOfDataTypes).%New()
                 Do ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(value.%ToJSON(),,.array)
                 If array.Find(jwtObj.payload.%Get(key)) = "" {
-                    Set sc = $$$ERROR(5001, key _ " mismatch.")
+                    Set sc = $$$ERROR($$$GeneralError, key _ " mismatch.")
                     Return $$$NO
                 }
             }
         }
+
+        Set jti = jwtObj.payload.jti
+        If (jti '= "") && ($Data(^dc.auth.jwt.JWTGeneratorI("blackList", jti))) {
+            Set sc = $$$ERROR($$$GeneralError, "Token is black listed.")
+            Return $$$NO
+        }
+
     } Catch (ex) {
         Set sc = ex.AsStatus()
     }
     Return $Select($$$ISOK(sc):$$$YES,1:$$$NO)
+}
+
+ClassMethod loadFromToken(jwt As %String, secret As %String = "") As dc.auth.jwt.JWTGenerator
+{
+    Set jwtObj = ..%New()
+    Set jsonHeader = $SYSTEM.Encryption.Base64Decode($Translate($Piece(jwt,".",1),"-_","+/"))
+    Set jsonPayload = $SYSTEM.Encryption.Base64Decode($Translate($Piece(jwt,".",2),"-_","+/"))
+    Set jwtObj.header = {}.%FromJSON(jsonHeader)
+    Set jwtObj.payload = {}.%FromJSON(jsonPayload)
+    Set jwtObj.secret = secret
+    Return jwtObj
+}
+
+ClassMethod blackList(jwt As %String) As %Status
+{
+    Set tSc = $$$OK
+    Try {
+        Set jwtObj = ..loadFromToken(jwt)
+        Set jti = jwtObj.payload.jti
+        If jti '= "" {
+            Set ^dc.auth.jwt.JWTGeneratorI("blackList", jti) = $Listbuild(jwtObj.payload.exp)
+        } Else {
+            Set tSc = $$$ERROR($$$GeneralError,"jti is null")
+        }
+    } Catch (ex) {
+        Set tSc = ex.AsStatus()
+    }
+    Return tSc
 }
 
 }
