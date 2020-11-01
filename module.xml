@@ -3,7 +3,8 @@
   <Document name="jwt-generator.ZPM">
     <Module>
         <Name>jwt-generator</Name>
-        <Version>1.1.0</Version>
+        <Version>1.1.1</Version>
+        <Description>JSON Web Token Generator for objectscript</Description>
         <Packaging>module</Packaging>
         <SourcesRoot>src</SourcesRoot>
         <Resource Name="dc.auth.jwt.PKG"/>
